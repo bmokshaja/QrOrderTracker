@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Delivery Partner Dashboard - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Delivery Partner Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('main.scanner_page') }}" class="btn btn-primary">Open QR Scanner</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Your Assigned Orders
+                </div>
+                <div class="card-body">
+                    {% if assigned_orders %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Description</th>
+                                        <th>Pickup Location</th>
+                                        <th>Delivery Location</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in assigned_orders %}
+                                        <tr>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>{{ order.description }}</td>
+                                            <td>{{ order.pickup_location }}</td>
+                                            <td>{{ order.delivery_location }}</td>
+                                            <td>
+                                                <span class="badge {% if order.status == 'created' %}bg-info{% elif order.status == 'accepted' %}bg-primary{% elif order.status == 'rejected' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                    {{ order.status }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{{ url_for('main.order_status', order_id=order.order_id) }}" class="btn btn-sm btn-info">View Details</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">You don't have any assigned orders yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    QR Code Scanner Instructions
+                </div>
+                <div class="card-body">
+                    <p>To update the status of an order, follow these steps:</p>
+                    <ol>
+                        <li>Go to the "Scanner" page</li>
+                        <li>Scan a status QR code at one of these locations:
+                            <ul>
+                                <li>Vendor location (Vendor Received)</li>
+                                <li>Shipping center (Shipping)</li>
+                                <li>Delivery vehicle (Out for Delivery)</li>
+                                <li>Customer location (Delivered)</li>
+                            </ul>
+                        </li>
+                        <li>The order status will be automatically updated</li>
+                    </ol>
+                    <p>Note: Status QR codes are placed at designated locations by the admin.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

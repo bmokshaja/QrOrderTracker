@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Create Order - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Create New Order
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.create_order') }}">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Order Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        <div class="form-text">Provide a clear description of the items in your order.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pickup_location" class="form-label">Pickup Location</label>
+                        <input type="text" class="form-control" id="pickup_location" name="pickup_location" required>
+                        <div class="form-text">Enter the address where the order should be picked up.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="delivery_location" class="form-label">Delivery Location</label>
+                        <input type="text" class="form-control" id="delivery_location" name="delivery_location" required>
+                        <div class="form-text">Enter the address where the order should be delivered.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="vendor_id" class="form-label">Select Vendor</label>
+                        <select class="form-select" id="vendor_id" name="vendor_id" required>
+                            <option value="" selected disabled>Choose a vendor...</option>
+                            {% for vendor in vendors %}
+                                <option value="{{ vendor.id }}">{{ vendor.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Select a vendor to handle your order.</div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

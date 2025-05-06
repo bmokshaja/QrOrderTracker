@@ -1,0 +1,131 @@
+/* General styling */
+body {
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+/* Card styling */
+.card {
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Table styling */
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* Status badge styling */
+.badge {
+    font-size: 0.85em;
+    padding: 0.35em 0.65em;
+}
+
+/* QR code styling */
+.qr-code-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.qr-code-container img {
+    max-width: 200px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: white;
+}
+
+/* Timeline styling for order status */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+    margin-top: 20px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: #ccc;
+    left: -30px;
+    top: 5px;
+}
+
+.timeline-marker.active {
+    background-color: #0d6efd;
+}
+
+.timeline-marker.rejected {
+    background-color: #dc3545;
+}
+
+.timeline-content {
+    padding-left: 10px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -23px;
+    width: 2px;
+    height: 100%;
+    background-color: #e9ecef;
+}
+
+/* Scanner styling */
+#scanner-container {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#video {
+    display: block;
+    width: 100%;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Navigation styling */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}

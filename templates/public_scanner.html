@@ -1,0 +1,159 @@
+
+{% extends "base.html" %}
+
+{% block title %}Order QR Scanner{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center mb-0">Scan Order QR Code</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div id="scanner-container">
+                            <video id="video" width="100%" style="max-width: 500px; border: 1px solid #ddd;"></video>
+                        </div>
+                        <div class="mt-3">
+                            <button id="start-button" class="btn btn-primary btn-lg">Start Scanner</button>
+                            <button id="stop-button" class="btn btn-secondary btn-lg" style="display: none;">Stop Scanner</button>
+                        </div>
+                    </div>
+                    
+                    <div id="result-container" style="display: none;" class="mt-4">
+                        <div class="alert alert-success">
+                            <h5>Order Found!</h5>
+                            <div id="order-details"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="error-container" style="display: none;" class="mt-4">
+                        <div class="alert alert-danger">
+                            <p id="error-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const video = document.getElementById('video');
+    const startButton = document.getElementById('start-button');
+    const stopButton = document.getElementById('stop-button');
+    const resultContainer = document.getElementById('result-container');
+    const orderDetails = document.getElementById('order-details');
+    const errorContainer = document.getElementById('error-container');
+    const errorMessage = document.getElementById('error-message');
+    
+    let scanning = false;
+    let videoStream = null;
+    
+    startButton.addEventListener('click', startScanner);
+    stopButton.addEventListener('click', stopScanner);
+    
+    function startScanner() {
+        resultContainer.style.display = 'none';
+        errorContainer.style.display = 'none';
+        
+        navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                facingMode: "environment",
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
+        })
+        .then(function(stream) {
+            videoStream = stream;
+            video.srcObject = stream;
+            video.setAttribute('playsinline', true);
+            video.play();
+            requestAnimationFrame(tick);
+            scanning = true;
+            
+            startButton.style.display = 'none';
+            stopButton.style.display = 'inline-block';
+        })
+        .catch(function(err) {
+            console.error('Error accessing camera:', err);
+            errorMessage.textContent = 'Error accessing camera: ' + err.message;
+            errorContainer.style.display = 'block';
+        });
+    }
+    
+    function stopScanner() {
+        if (videoStream) {
+            videoStream.getTracks().forEach(track => track.stop());
+            videoStream = null;
+        }
+        scanning = false;
+        stopButton.style.display = 'none';
+        startButton.style.display = 'inline-block';
+    }
+    
+    function tick() {
+        if (!scanning) return;
+        
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            const canvas = document.createElement('canvas');
+            const canvasContext = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const imageData = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+            });
+            
+            if (code) {
+                processQRCode(code.data);
+                stopScanner();
+                return;
+            }
+        }
+        requestAnimationFrame(tick);
+    }
+    
+    function processQRCode(qrData) {
+        fetch('/api/process-qr-scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ qr_data: qrData }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const order = data.order;
+                orderDetails.innerHTML = `
+                    <div class="order-info">
+                        <p><strong>Order ID:</strong> ${order.order_id}</p>
+                        <p><strong>Status:</strong> <span class="badge bg-primary">${order.status}</span></p>
+                        <p><strong>Description:</strong> ${order.description}</p>
+                        <p><strong>Pickup:</strong> ${order.pickup_location}</p>
+                        <p><strong>Delivery:</strong> ${order.delivery_location}</p>
+                        <p><strong>Created:</strong> ${new Date(order.created_at).toLocaleString()}</p>
+                    </div>
+                `;
+                resultContainer.style.display = 'block';
+            } else {
+                errorMessage.textContent = data.error || 'Failed to process QR code';
+                errorContainer.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            errorMessage.textContent = 'Error processing QR code: ' + error.message;
+            errorContainer.style.display = 'block';
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Order Status - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Order Status: {{ order.order_id }}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5 class="card-title">Order QR Code</h5>
+                        {% if order.qr_code %}
+                            <img src="{{ order.qr_code }}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                        {% else %}
+                            <p>QR code not available</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <h5 class="card-title">Order Details</h5>
+                        <p><strong>Description:</strong> {{ order.description }}</p>
+                        <p><strong>Pickup Location:</strong> {{ order.pickup_location }}</p>
+                        <p><strong>Delivery Location:</strong> {{ order.delivery_location }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if order.status == 'created' %}bg-info{% elif order.status == 'accepted' %}bg-primary{% elif order.status == 'rejected' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </p>
+                        <p><strong>Created:</strong> {{ order.created_at }}</p>
+                        <p><strong>Last Updated:</strong> {{ order.updated_at }}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Order Progress</h5>
+                    <div class="progress" style="height: 30px;">
+                        {% if order.status == 'created' %}
+                            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Order Created</div>
+                        {% elif order.status == 'accepted' %}
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">Order Accepted</div>
+                        {% elif order.status == 'vendor_received' %}
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 55%;" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100">Vendor Received</div>
+                        {% elif order.status == 'shipping' %}
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">Shipping</div>
+                        {% elif order.status == 'out_for_delivery' %}
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">Out for Delivery</div>
+                        {% elif order.status == 'delivered' %}
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Delivered</div>
+                        {% elif order.status == 'rejected' %}
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Rejected</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Status Timeline</h5>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if order.status != 'rejected' %}active{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Order Created</h6>
+                                <p>{{ order.created_at }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if order.status in ['accepted', 'vendor_received', 'shipping', 'out_for_delivery', 'delivered'] %}active{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Order Accepted</h6>
+                                {% if order.status in ['accepted', 'vendor_received', 'shipping', 'out_for_delivery', 'delivered'] %}
+                                    <p>Vendor has accepted your order</p>
+                                {% else %}
+                                    <p>Waiting for vendor acceptance</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if order.status in ['vendor_received', 'shipping', 'out_for_delivery', 'delivered'] %}active{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Vendor Received</h6>
+                                {% if order.status in ['vendor_received', 'shipping', 'out_for_delivery', 'delivered'] %}
+                                    <p>Order received by vendor</p>
+                                {% else %}
+                                    <p>Waiting for vendor to receive</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if order.status in ['shipping', 'out_for_delivery', 'delivered'] %}active{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Shipping</h6>
+                                {% if order.status in ['shipping', 'out_for_delivery', 'delivered'] %}
+                                    <p>Order is in shipping</p>
+                                {% else %}
+                                    <p>Not yet shipped</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if order.status in ['out_for_delivery', 'delivered'] %}active{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Out for Delivery</h6>
+                                {% if order.status in ['out_for_delivery', 'delivered'] %}
+                                    <p>Order is out for delivery</p>
+                                {% else %}
+                                    <p>Not yet out for delivery</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-item">
+                            <div class="timeline-marker {% if order.status == 'delivered' %}active{% endif %}"></div>
+                            <div class="timeline-content">
+                                <h6>Delivered</h6>
+                                {% if order.status == 'delivered' %}
+                                    <p>Order has been delivered</p>
+                                {% else %}
+                                    <p>Not yet delivered</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if order.status == 'rejected' %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker rejected active"></div>
+                                <div class="timeline-content">
+                                    <h6>Order Rejected</h6>
+                                    <p>Vendor has rejected this order</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+        margin-top: 20px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #ccc;
+        left: -30px;
+        top: 5px;
+    }
+    
+    .timeline-marker.active {
+        background-color: #0d6efd;
+    }
+    
+    .timeline-marker.rejected {
+        background-color: #dc3545;
+    }
+    
+    .timeline-content {
+        padding-left: 10px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -23px;
+        width: 2px;
+        height: 100%;
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}

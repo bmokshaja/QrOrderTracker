@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="mb-4">Welcome to the Order Tracking System</h1>
+            <p class="lead mb-5">A comprehensive system to manage orders with QR code tracking</p>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Already have an account?</h5>
+                            <p class="card-text">Log in to access your dashboard and manage your orders.</p>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">New to the system?</h5>
+                            <p class="card-text">Create an account to start using our order tracking services.</p>
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-success">Register</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5">
+                <h3>Key Features</h3>
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">QR Code Tracking</h5>
+                                <p class="card-text">Track your orders in real-time using QR codes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Multiple User Roles</h5>
+                                <p class="card-text">Dedicated interfaces for customers, vendors, and delivery partners.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Status Updates</h5>
+                                <p class="card-text">Get real-time updates at each stage of the delivery process.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Customer Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('main.create_order') }}" class="btn btn-primary">Create New Order</a>
+                        <a href="{{ url_for('main.track_order') }}" class="btn btn-secondary">Track an Order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    Your Orders
+                </div>
+                <div class="card-body">
+                    {% if orders %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                        <tr>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>{{ order.description }}</td>
+                                            <td>
+                                                <span class="badge {% if order.status == 'created' %}bg-info{% elif order.status == 'accepted' %}bg-primary{% elif order.status == 'rejected' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                    {% if order.status == 'rejected' %}
+                                                        Order cancelled due to availability of stock
+                                                    {% else %}
+                                                        {{ order.status }}
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td>{{ order.created_at }}</td>
+                                            <td>
+                                                <a href="{{ url_for('main.order_status', order_id=order.order_id) }}" class="btn btn-sm btn-info">View Status</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">You haven't created any orders yet.</p>
+                        <div class="text-center">
+                            <a href="{{ url_for('main.create_order') }}" class="btn btn-primary">Create Your First Order</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

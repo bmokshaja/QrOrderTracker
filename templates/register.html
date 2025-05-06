@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Register
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('auth.register') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="" selected disabled>Select your role</option>
+                            <option value="customer">Customer</option>
+                            <option value="vendor">Vendor</option>
+                            <option value="delivery">Delivery Partner</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                Already have an account? <a href="{{ url_for('auth.login') }}">Login</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                About Order Tracking System
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Choose your role</h5>
+                <p class="card-text">
+                    Select the role that best describes how you'll use our system:
+                </p>
+                <ul>
+                    <li><strong>Customer:</strong> Create orders and track them</li>
+                    <li><strong>Vendor:</strong> Accept or reject order requests</li>
+                    <li><strong>Delivery Partner:</strong> Handle order deliveries and update status</li>
+                    <li><strong>Admin:</strong> Manage the system and view all orders</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

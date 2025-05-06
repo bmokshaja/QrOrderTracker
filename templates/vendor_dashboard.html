@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Vendor Dashboard - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Vendor Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    Pending Order Requests
+                </div>
+                <div class="card-body">
+                    {% if pending_orders %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Description</th>
+                                        <th>Delivery Location</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in pending_orders %}
+                                        <tr>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>{{ order.description }}</td>
+                                            <td>{{ order.delivery_location }}</td>
+                                            <td>{{ order.created_at }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('main.respond_to_order', order_id=order.id, action='accept') }}" class="btn btn-sm btn-success">Accept</a>
+                                                    <a href="{{ url_for('main.respond_to_order', order_id=order.id, action='reject') }}" class="btn btn-sm btn-danger">Reject</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">No pending order requests.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    Your Accepted Orders
+                </div>
+                <div class="card-body">
+                    {% if assigned_orders %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Description</th>
+                                        <th>Status</th>
+                                        <th>Delivery Partner</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in assigned_orders %}
+                                        <tr>
+                                            <td>{{ order.order_id }}</td>
+                                            <td>{{ order.description }}</td>
+                                            <td>
+                                                <span class="badge {% if order.status == 'created' %}bg-info{% elif order.status == 'accepted' %}bg-primary{% elif order.status == 'rejected' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                    {{ order.status }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if order.delivery_partner_id %}
+                                                    Assigned
+                                                {% else %}
+                                                    Not assigned yet
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">You haven't accepted any orders yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Order Tracking System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Status QR Codes
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for qr_code in status_qr_codes %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100">
+                                    <div class="card-header">
+                                        {{ qr_code.status|replace('_', ' ')|title }}
+                                    </div>
+                                    <div class="card-body text-center">
+                                        {% if qr_code.qr_code %}
+                                            <img src="{{ qr_code.qr_code }}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                                        {% else %}
+                                            <p>QR code not generated</p>
+                                        {% endif %}
+                                        <p class="mt-2">{{ qr_code.location_description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <p><strong>Instructions:</strong> Place these QR codes at the designated locations to enable delivery partners to update order statuses.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col">
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="vendors-tab" data-bs-toggle="tab" data-bs-target="#vendors" type="button" role="tab">Vendors</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab">Delivery Partners</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="customers-tab" data-bs-toggle="tab" data-bs-target="#customers" type="button" role="tab">Customers</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="adminTabsContent">
+                <div class="tab-pane fade show active" id="orders" role="tabpanel">
+                    <div class="card border-top-0">
+                        <div class="card-body">
+                            {% if orders %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Customer</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Vendor</th>
+                                                <th>Delivery Partner</th>
+                                                <th>Created At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in orders %}
+                                                <tr>
+                                                    <td>{{ order.order_id }}</td>
+                                                    <td>{{ storage.get_user_by_id(order.customer_id).username if order.customer_id else 'N/A' }}</td>
+                                                    <td>{{ order.description }}</td>
+                                                    <td>
+                                                        <span class="badge {% if order.status == 'created' %}bg-info{% elif order.status == 'accepted' %}bg-primary{% elif order.status == 'rejected' %}bg-danger{% elif order.status == 'delivered' %}bg-success{% else %}bg-secondary{% endif %}">
+                                                            {{ order.status }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ storage.get_user_by_id(order.vendor_id).username if order.vendor_id else 'Not assigned' }}</td>
+                                                    <td>{{ storage.get_user_by_id(order.delivery_partner_id).username if order.delivery_partner_id else 'Not assigned' }}</td>
+                                                    <td>{{ order.created_at }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-center">No orders in the system.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="vendors" role="tabpanel">
+                    <div class="card border-top-0">
+                        <div class="card-body">
+                            {% if vendors %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Joined</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for vendor in vendors %}
+                                                <tr>
+                                                    <td>{{ vendor.username }}</td>
+                                                    <td>{{ vendor.email }}</td>
+                                                    <td>{{ vendor.created_at }}</td>
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn btn-sm btn-info">Edit</button>
+                                                            <button type="button" class="btn btn-sm btn-danger">Deactivate</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-center">No vendors registered in the system.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="delivery" role="tabpanel">
+                    <div class="card border-top-0">
+                        <div class="card-body">
+                            {% if delivery_partners %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Joined</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for partner in delivery_partners %}
+                                                <tr>
+                                                    <td>{{ partner.username }}</td>
+                                                    <td>{{ partner.email }}</td>
+                                                    <td>{{ partner.created_at }}</td>
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn btn-sm btn-info">Edit</button>
+                                                            <button type="button" class="btn btn-sm btn-danger">Deactivate</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-center">No delivery partners registered in the system.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="customers" role="tabpanel">
+                    <div class="card border-top-0">
+                        <div class="card-body">
+                            {% if customers %}
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Joined</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for customer in customers %}
+                                                <tr>
+                                                    <td>{{ customer.username }}</td>
+                                                    <td>{{ customer.email }}</td>
+                                                    <td>Customer</td>
+                                                    <td>{{ customer.created_at }}</td>
+                                                    <td>
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn btn-sm btn-info">Edit</button>
+                                                            <button type="button" class="btn btn-sm btn-danger">Deactivate</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <p class="text-center">No customers registered in the system.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
