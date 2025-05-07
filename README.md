@@ -24,15 +24,25 @@ Pillow: Image processing
 
 📁 Project Structure
 app.py: Application entry point
+
 __init__.py: Package initialization
+
 models.py: Database models for users, orders, and QR codes
+
 routes.py: URL route definitions
+
 auth.py: User authentication and authorization
+
 qr_manager.py: QR code generation and processing
+
 order_manager.py: Order CRUD operations
+
 storage.py: Database connection and operations
+
 templates/: HTML templates
+
 static/: CSS, JavaScript, and images
+
 Procfile & runtime.txt: Deployment configuration
 
 📋 Prerequisites
